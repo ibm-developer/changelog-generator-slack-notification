@@ -1,0 +1,22 @@
+{
+  "name": "changelog-slack-notification",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.3.0",
+    "html-entities": "^1.2.1",
+    "jsonpath": "^1.0.0",
+    "markdown": "^0.5.0",
+    "minimist": "^1.2.0",
+    "parse5": "^3.0.2",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2"
+  }
+}
