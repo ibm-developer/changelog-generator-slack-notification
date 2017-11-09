@@ -13,82 +13,70 @@
 
 /* eslint-disable */
 const options = require('minimist')(process.argv.slice(2));
+const cheerio = require('cheerio');
 const Entities = require('html-entities').AllHtmlEntities;
 const entities = new Entities();
 const request = require('request-promise');
-const jsonpath = require('jsonpath');
 const chalk = require('chalk');
 
-const parser = require('parse5');
-
-let field = {
-	short: false
-};
-
-const orange = '#ffa500';
 const blue = '#00007f';
-const green = '#008000';
-let color,
+let field,
+	firstfield = true,
+	fields = [],
 	title = options.v,
 	apiUrl = options.api,
+	text,
 	generatorName = options.name,
 	title_link;
 
 
-const document = parser.parse(entities.decode(options.html));
-console.log(parser.serialize(document));
+const $ = cheerio.load(entities.decode(options.html));
 
-const root = document.childNodes[0].childNodes[1];
+let root = $($('p')[1]).nextUntil('p');
 
-field.title = jsonpath.query(root.childNodes, '$[?(@.nodeName=="h3")].childNodes[0].value',1)[0];
+for(var i = 0; i < root.length; i++){
+		if(i == 0){
+			title_link = root[0].children[0].attribs.href
+		}
 
-let list = jsonpath.query(root.childNodes, '$[?(@.nodeName=="ul")].childNodes',1)[0];
+		if($(root[i]).is('h3')){
+				if(!firstfield){
+					field.value = field.value.substring(0, field.value.length-2);
+					fields.push(field);
+				}
+				field = {
+					short: false
+				};
+				field.title = $(root[i]).html();
+				field.value = '- ';
 
-field.value = '+';
-for(let i = 0; i < list.length; i++){
-	let eleHtmlString = parser.serialize(list[i]);
-	if(eleHtmlString !== ''){
-		// convert strong to bold
-		eleHtmlString = eleHtmlString.replace('<strong>', '*').replace('</strong>', '*');
-		//remove href attr and clean up
-		eleHtmlString = eleHtmlString.replace('<a href="', '<').replace('</a>', '').replace('"', '');
+		}
 
-		//remove a tag value
-		let index = eleHtmlString.lastIndexOf('>');
-		eleHtmlString = eleHtmlString.substring(0,index+1);
-		let value = jsonpath.query(list[i].childNodes, '$[?(@.tagName=="a")].childNodes[?(@.nodeName=="#text")].value')[0];
-		eleHtmlString = eleHtmlString.replace('>', `|${value}>)`);
-		field.value+=(`${eleHtmlString}\n+`)
-	}
+
+
+		if($(root[i]).is('ul')){
+			$(root[i]).children().each( (i, elem) => {
+				text = $(elem).text();
+				field.value+=(` ${text}\n-`);
+				firstfield = false;
+			})
+		}
 }
 
+//push the last field
 // remove extra `+/n`
 field.value = field.value.substring(0, field.value.length-2);
-
-switch(field.title){
-	case 'BREAKING CHANGES' :
-		color = orange;
-		break;
-	case 'Bug Fixes':
-		color = green;
-		break;
-	default :
-		color = blue;
-		break;
-}
-
-// get link to updated tag
-title_link = jsonpath.query(root.childNodes, '$[?(@.nodeName=="h2")].childNodes[?(@.nodeName=="a")].attrs[0].value',1)[0];
+fields.push(field);
 
 let body = {
 	attachments : [{
 		mrkdwn_in: ['fields'],
 		fallback: `${generatorName} CHANGELOG Update!`,
-		color : color,
+		color : blue,
 		pretext: `${generatorName} CHANGELOG Update!`,
 		title: title,
 		title_link: title_link,
-		fields : [field]
+		fields : fields
 	}]
 };
 
@@ -106,8 +94,4 @@ request(requestOptions)
 	.catch((err) => {
 		console.error(chalk.red(err));
 	});
-
-
-
-
 
