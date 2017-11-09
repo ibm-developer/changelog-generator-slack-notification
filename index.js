@@ -22,6 +22,8 @@ const chalk = require('chalk');
 const blue = '#00007f';
 let field,
 	firstfield = true,
+	linkText,
+	href,
 	fields = [],
 	title = options.v,
 	apiUrl = options.api,
@@ -57,6 +59,9 @@ for(var i = 0; i < root.length; i++){
 		if($(root[i]).is('ul')){
 			$(root[i]).children().each( (i, elem) => {
 				text = $(elem).text();
+				linkText = $(elem).children().html();
+				href = $(elem).children().get(0).attribs.href;
+				text = text.replace(linkText, `<${href}|${linkText}>`);
 				field.value+=(` ${text}\n-`);
 				firstfield = false;
 			})
