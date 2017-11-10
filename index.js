@@ -60,7 +60,19 @@ for(var i = 0; i < root.length; i++){
 			$(root[i]).children().each( (i, elem) => {
 				text = $(elem).text();
 				linkText = $(elem).children().html();
-				href = $(elem).children().get(0).attribs.href;
+				if($($(elem).children().get(0)).is('a')){
+					href = $(elem).children().get(0).attribs.href;
+				} else {
+					href = $(elem).children().get(1).attribs.href;
+				}
+
+				if($($(elem).children().get(0)).is('strong')){
+					let boldedText = linkText;
+					text = text.replace(boldedText, `*${boldedText}*`);
+					linkText = $($(elem).children().get(1)).html();
+				}
+
+
 				text = text.replace(linkText, `<${href}|${linkText}>`);
 				field.value+=(` ${text}\n-`);
 				firstfield = false;
