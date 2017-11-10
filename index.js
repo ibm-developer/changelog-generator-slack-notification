@@ -60,6 +60,7 @@ for(var i = 0; i < root.length; i++){
 			$(root[i]).children().each( (i, elem) => {
 				text = $(elem).text();
 				linkText = $(elem).children().html();
+
 				if($($(elem).children().get(0)).is('a')){
 					href = $(elem).children().get(0).attribs.href;
 				} else {
