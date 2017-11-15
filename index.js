@@ -63,7 +63,7 @@ for(var i = 0; i < root.length; i++){
 
 				if($($(elem).children().get(0)).is('a')){
 					href = $(elem).children().get(0).attribs.href;
-				} else if(field.title !== 'BREAKING CHANGES') {
+				} else if(field.title !== 'BREAKING CHANGES' && field.title !== 'Chore') {
 					href = $(elem).children().get(1).attribs.href;
 				} else {
 					href = '';
