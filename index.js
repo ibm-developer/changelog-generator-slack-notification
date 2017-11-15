@@ -50,7 +50,7 @@ for(var i = 0; i < root.length; i++){
 					short: false
 				};
 				field.title = $(root[i]).html();
-				field.value = '- ';
+				field.value = '-';
 
 		}
 
@@ -63,8 +63,10 @@ for(var i = 0; i < root.length; i++){
 
 				if($($(elem).children().get(0)).is('a')){
 					href = $(elem).children().get(0).attribs.href;
-				} else {
+				} else if(field.title !== 'BREAKING CHANGES') {
 					href = $(elem).children().get(1).attribs.href;
+				} else {
+					href = '';
 				}
 
 				if($($(elem).children().get(0)).is('strong')){
@@ -73,8 +75,10 @@ for(var i = 0; i < root.length; i++){
 					linkText = $($(elem).children().get(1)).html();
 				}
 
+				if(href !== ''){
+					text = text.replace(linkText, `<${href}|${linkText}>`);
+				}
 
-				text = text.replace(linkText, `<${href}|${linkText}>`);
 				field.value+=(` ${text}\n-`);
 				firstfield = false;
 			})
