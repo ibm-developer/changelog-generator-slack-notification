@@ -114,7 +114,7 @@ let requestOptions = {
 
 request(requestOptions)
 	.then((res) => {
-		console.log(chalk.blue(res))
+		console.log(chalk.blue('Successfully posted to updated CHANGELOG to Slack!!'))
 	})
 	.catch((err) => {
 		console.error(chalk.red(err));
