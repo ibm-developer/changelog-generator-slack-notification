@@ -87,8 +87,11 @@ for(var i = 0; i < root.length; i++){
 
 //push the last field
 // remove extra `+/n`
-field.value = field.value.substring(0, field.value.length-2);
-fields.push(field);
+if(field){
+	field.value = field.value.substring(0, field.value.length-2);
+	fields.push(field);
+}
+
 
 let body = {
 	attachments : [{
